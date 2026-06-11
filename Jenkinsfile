@@ -1,17 +1,15 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'mcr.microsoft.com/playwright:v1.54.0-noble'
+        }
+    }
 
     stages {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
-            }
-        }
-
-        stage('Install Playwright Browsers') {
-            steps {
-                sh 'npx playwright install'
+                sh 'npm ci || npm install'
             }
         }
 
@@ -21,7 +19,38 @@ pipeline {
             }
         }
     }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: true
+        }
+    }
 }
+
+// pipeline {
+//     agent any
+
+//     stages {
+
+//         stage('Install Dependencies') {
+//             steps {
+//                 sh 'npm install'
+//             }
+//         }
+
+//         stage('Install Playwright Browsers') {
+//             steps {
+//                 sh 'npx playwright install'
+//             }
+//         }
+
+//         stage('Run Tests') {
+//             steps {
+//                 sh 'npx playwright test'
+//             }
+//         }
+//     }
+// }
 
 // pipeline {
 //     agent any
